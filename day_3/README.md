@@ -19,7 +19,7 @@ Venv is a tool to create isolated Python environments. The basic problem being a
 you can create a virtual environment by running the following command:
 
 ```bash
-python3 -m venv venv
+python3 -m venv env
 ```
 
 ## Flask Basics
