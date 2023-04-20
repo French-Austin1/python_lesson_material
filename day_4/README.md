@@ -16,6 +16,45 @@ Flask-WTForms is a simple integration of Flask and WTForms, including CSRF, file
 
 You can use it in conjunction with SQLAlchemy to store your user data in a database and Flask-WTForms to handle your login and registration forms.
 
+### Using Flask-WTForms
+
+To create a new form in Flask-WTForms, add the following code to your `app.py` file:
+
+```python
+from flask_wtf import FlaskForm
+from wtforms import StringField, PasswordField, SubmitField
+from wtforms.validators import DataRequired, Email, Length
+
+class LoginForm(FlaskForm):
+    email = StringField('Email', validators=[DataRequired(), Email()])
+    password = PasswordField('Password', validators=[DataRequired(), Length(min=8)])
+    submit = SubmitField('Login')
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    form = LoginForm()
+    if form.validate_on_submit():
+        email = form.email.data
+        password = form.password.data
+        user = User.query.filter_by(email=email).first()
+        if user and user.password == password:
+            login_user(user)
+            return redirect(url_for('index'))
+        return '<h1>Invalid email or password</h1>'
+    return render_template('login.html', form=form)
+```
+
+To show the form in your template, you would use the following code:
+
+```html
+<form method="POST">
+    {{ form.hidden_tag() }}
+    {{ form.email.label }} {{ form.email() }}
+    {{ form.password.label }} {{ form.password() }}
+    {{ form.submit() }}
+</form>
+```
+
 ## Flask-SQLAlchemy
 
  Flask-Sqlalchemy is a wrapper for SQLAlchemy. It is used to simplify the usage of SQLAlchemy with Flask.
@@ -220,7 +259,7 @@ def test_index():
     client = app.test_client() # create a test client
     response = client.get('/') # send a get request to the index route
     assert response.status_code == 200 # check that the status code is 200
-    assert b'Hello World!' in response.data # check that the response contains the string 'Hello World!'
+    assert 'Hello World!' in response.data # check that the response contains the string 'Hello World!'
 ```
   
   ```python
@@ -231,7 +270,7 @@ def test_index():
     with app.test_request_context(): # create a test request context
         response = index() # call the index view function
         assert response.status_code == 200 # check that the status code is 200
-        assert b'Hello World!' in response.data # check that the response contains the string 'Hello World!'
+        assert 'Hello World!' in response.data # check that the response contains the string 'Hello World!'
 ```
 
 ### Testing the forms
@@ -246,5 +285,102 @@ def test_login_form():
     client = app.test_client() # create a test client
     response = client.post('/login', data=dict(username='admin', password='admin'), follow_redirects=True) # send a post request to the login route
     assert response.status_code == 200 # check that the status code is 200
-    assert b'You are logged in!' in response.data # check that the response contains the string 'You are logged in!'
+    assert 'You are logged in!' in response.data # check that the response contains the string 'You are logged in!'
 ```
+## Writing a package to test your entire application
+
+With pytest, you can create a directory called `tests` and add files that start with `test_` to it. Each file will be a test module. You can also add a `conftest.py` file to the `tests` directory to add fixtures and other test configuration.
+
+Here is an example of a `conftest.py` file:
+
+```python
+import pytest
+from app import create_app, db
+from app.models import User
+
+@pytest.fixture
+def app():
+    app = create_app()
+    app.config['TESTING'] = True
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite://'
+    with app.app_context():
+        db.create_all()
+        yield app
+
+@pytest.fixture
+def client(app):
+    return app.test_client()
+
+@pytest.fixture
+def runner(app):
+    return app.test_cli_runner()
+```
+
+## Deploying flask applications
+
+Flask applications can be deployed in many ways. Here are some of the most common ways:
+
+    -   Deploying with a web server gateway interface (WSGI) server: This is the most common way to deploy flask applications. You can use a WSGI server like gunicorn or uWSGI to deploy your application.
+    
+    -   Deploying with a container: You can use a container like Docker to deploy your application.
+    
+    -   Deploying with a cloud provider: You can use a cloud provider like Heroku to deploy your application.
+
+### Deploying with a WSGI server
+
+To deploy your application with a WSGI server, you need to create a `wsgi.py` file in the root directory of your project. Here is an example of a `wsgi.py` file:
+
+```python
+from app import create_app
+
+app = create_app()
+```
+
+You can then use a WSGI server like gunicorn to run your application:
+
+```bash
+gunicorn wsgi:app
+```
+
+### Deploying with a container
+
+To deploy your application with a container, you need to create a `Dockerfile` in the root directory of your project. Here is an example of a `Dockerfile`:
+
+```dockerfile
+FROM python:3.8
+
+WORKDIR /app
+
+COPY requirements.txt requirements.txt
+RUN pip install -r requirements.txt
+
+COPY . .
+
+CMD ["python", "wsgi.py"]
+```
+
+You can then use the `docker` command to build and run your application:
+
+```bash
+docker build -t flask-app .
+docker run -d -p 5000:5000 flask-app
+```
+
+### using ngrok to test your application
+
+You can use ngrok to test your application locally. ngrok is a tool that creates a secure tunnel from a public endpoint to your local machine. You can then use the public endpoint to test your application.
+
+You can also use ngrok to test your application on a mobile device or send it to a friend to test it.
+
+To use ngrok, you need to download it from the [ngrok website](https://ngrok.com/download). Once you have downloaded it and made a free account, you can run the following command to start ngrok:
+
+```bash
+ngrok http 5000
+```
+
+## Conclusion
+
+In this tutorial, you learned how to create a flask application from scratch as well as a database. You also learned how to test your application and deploy it in different ways.
+
+I hope this material was helpful to you. If you have any questions, feel free to reach out to me at my email address: [austin.french@smoothstack.com](mailto:austin.french@smoothstack.com).
+
