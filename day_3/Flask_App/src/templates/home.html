@@ -1,0 +1,13 @@
+{% extends "layout.html" %}
+
+{% block title %}Home{% endblock title %}
+
+{% block content %}
+    <h1>Home</h1>
+    {% if name %}
+    <h3>Hello {{ name }}! I got your name from some session data.</h3>
+    {% endif %}
+    {% for people in people %}
+        <p>Hello {{ people }}!</p>
+    {% endfor %}
+{% endblock content %}
