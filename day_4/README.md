@@ -378,9 +378,12 @@ To use ngrok, you need to download it from the [ngrok website](https://ngrok.com
 ngrok http 5000
 ```
 
-## Conclusion
+## Useful sites and documentation
 
-In this tutorial, you learned how to create a flask application from scratch as well as a database. You also learned how to test your application and deploy it in different ways.
-
-I hope this material was helpful to you. If you have any questions, feel free to reach out to me at my email address: [austin.french@smoothstack.com](mailto:austin.french@smoothstack.com).
-
+    -  [Flask documentation](https://flask.palletsprojects.com/en/1.1.x/)
+    -  [Bootstrap documentation](https://getbootstrap.com/docs/4.5/getting-started/introduction/)
+    -  [Flask_login documentation](https://flask-login.readthedocs.io/en/latest/)
+    -  [Flask_sqlalchemy documentation](https://flask-sqlalchemy.palletsprojects.com/en/2.x/)
+    -  [Flask_wtf documentation](https://flask-wtf.readthedocs.io/en/stable/)
+    -  [Flask_bootstrap documentation](https://pythonhosted.org/Flask-Bootstrap/)
+    -  [Pypi](https://pypi.org/)
